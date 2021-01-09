@@ -9,7 +9,7 @@
 - 3. 若 JSX 传递了 children，在组件第一个参数中会包含 children 字段，值是一个 HTMLElement 数组
 
 ```jsx
-import Pop from 'giv-pop';
+import Pop from 'vanilla-pop';
 
 const App = ()=>{
   return <Pop>
