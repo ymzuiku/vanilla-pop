@@ -1,5 +1,5 @@
 {
-  "name": "vanila-pop",
+  "name": "vanilla-pop",
   "version": "1.0.1",
   "main": "umd/index.js",
   "types": "umd/index.d.ts",
