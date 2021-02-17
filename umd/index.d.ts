@@ -1,4 +1,29 @@
 import "./style";
+export interface Instance {
+    clearDelayTimeouts(): void;
+    destroy(): void;
+    disable(): void;
+    enable(): void;
+    hide(): void;
+    hideWithInteractivity(event: MouseEvent): void;
+    id: number;
+    plugins: any[];
+    popper: any;
+    popperInstance: any | null;
+    props: any;
+    reference: any;
+    setContent(content: any): void;
+    setProps(partialProps: any): void;
+    show(): void;
+    state: {
+        isEnabled: boolean;
+        isVisible: boolean;
+        isDestroyed: boolean;
+        isMounted: boolean;
+        isShown: boolean;
+    };
+    unmount(): void;
+}
 export interface IPop {
     followCursor?: boolean | "horizontal" | "vertical" | "initial";
     animation?: "scale" | "shift-away" | "shift-toward" | "perspective";
@@ -26,18 +51,18 @@ export interface IPop {
     moveTransition?: string;
     offset?: [number, number];
     popperOptions?: any;
-    onAfterUpdate?: (instance: any, partialProps: any) => any;
-    onBeforeUpdate?: (instance: any, partialProps: any) => any;
-    onClickOutside?: (instance: any, event: any) => any;
-    onCreate?: (instance: any) => any;
-    onDestroy?: (instance: any) => any;
-    onHidden?: (instance: any) => any;
-    onHide?: (instance: any) => any;
-    onMount?: (instance: any) => any;
-    onShow?: (instance: any) => any;
-    onShown?: (instance: any) => any;
-    onTrigger?: (instance: any, event: any) => any;
-    onUntrigger?: (instance: any, event: any) => any;
+    onAfterUpdate?: (instance: Instance, partialProps: any) => any;
+    onBeforeUpdate?: (instance: Instance, partialProps: any) => any;
+    onClickOutside?: (instance: Instance, event: any) => any;
+    onCreate?: (instance: Instance) => any;
+    onDestroy?: (instance: Instance) => any;
+    onHidden?: (instance: Instance) => any;
+    onHide?: (instance: Instance) => any;
+    onMount?: (instance: Instance) => any;
+    onShow?: (instance: Instance) => any;
+    onShown?: (instance: Instance) => any;
+    onTrigger?: (instance: Instance, event: any) => any;
+    onUntrigger?: (instance: Instance, event: any) => any;
     render?: any;
     showOnCreate?: boolean;
     sticky?: boolean | "reference" | "popper";
@@ -48,5 +73,5 @@ export interface IPop {
     zIndex?: number;
     children?: any[];
 }
-declare const _default: ({ onCreate, padding, children, onHidden, trigger, zIndex, ...rest }: IPop) => any;
+declare const _default: ({ onCreate, onShow, padding, children, trigger, zIndex, ...rest }: IPop) => any;
 export default _default;

@@ -1,6 +1,32 @@
 import tippy, { followCursor, inlinePositioning } from "tippy.js";
 import "./style";
 
+export interface Instance {
+  clearDelayTimeouts(): void;
+  destroy(): void;
+  disable(): void;
+  enable(): void;
+  hide(): void;
+  hideWithInteractivity(event: MouseEvent): void;
+  id: number;
+  plugins: any[];
+  popper: any;
+  popperInstance: any | null;
+  props: any;
+  reference: any;
+  setContent(content: any): void;
+  setProps(partialProps: any): void;
+  show(): void;
+  state: {
+    isEnabled: boolean;
+    isVisible: boolean;
+    isDestroyed: boolean;
+    isMounted: boolean;
+    isShown: boolean;
+  };
+  unmount(): void;
+}
+
 export interface IPop {
   followCursor?: boolean | "horizontal" | "vertical" | "initial";
   // animateFill?: boolean;
@@ -45,18 +71,18 @@ export interface IPop {
   moveTransition?: string;
   offset?: [number, number];
   popperOptions?: any;
-  onAfterUpdate?: (instance: any, partialProps: any) => any;
-  onBeforeUpdate?: (instance: any, partialProps: any) => any;
-  onClickOutside?: (instance: any, event: any) => any;
-  onCreate?: (instance: any) => any;
-  onDestroy?: (instance: any) => any;
-  onHidden?: (instance: any) => any;
-  onHide?: (instance: any) => any;
-  onMount?: (instance: any) => any;
-  onShow?: (instance: any) => any;
-  onShown?: (instance: any) => any;
-  onTrigger?: (instance: any, event: any) => any;
-  onUntrigger?: (instance: any, event: any) => any;
+  onAfterUpdate?: (instance: Instance, partialProps: any) => any;
+  onBeforeUpdate?: (instance: Instance, partialProps: any) => any;
+  onClickOutside?: (instance: Instance, event: any) => any;
+  onCreate?: (instance: Instance) => any;
+  onDestroy?: (instance: Instance) => any;
+  onHidden?: (instance: Instance) => any;
+  onHide?: (instance: Instance) => any;
+  onMount?: (instance: Instance) => any;
+  onShow?: (instance: Instance) => any;
+  onShown?: (instance: Instance) => any;
+  onTrigger?: (instance: Instance, event: any) => any;
+  onUntrigger?: (instance: Instance, event: any) => any;
   render?: any;
   showOnCreate?: boolean;
   sticky?: boolean | "reference" | "popper";
@@ -68,7 +94,7 @@ export interface IPop {
   children?: any[];
 }
 
-export default ({ onCreate, padding, children = [], onHidden, trigger, zIndex, ...rest }: IPop) => {
+export default ({ onCreate, onShow, padding, children = [], trigger, zIndex, ...rest }: IPop) => {
   if (!children) {
     return document.createElement("span");
   }
@@ -79,9 +105,11 @@ export default ({ onCreate, padding, children = [], onHidden, trigger, zIndex, .
     trigger = "mouseenter focus";
   }
 
+  const isFn = typeof content === "function";
+
   tippy(button, {
     // arrowType: "round",
-    content,
+    content: isFn ? content() : content,
     duration: [170, 170],
     // animation: "shift-away",
     animation: void 0,
@@ -94,18 +122,21 @@ export default ({ onCreate, padding, children = [], onHidden, trigger, zIndex, .
     appendTo: document.body,
     placement: "bottom",
     plugins: [followCursor, inlinePositioning],
-    onCreate: (ins: any) => {
+    onShow: (ins: Instance) => {
+      if (isFn) {
+        ins.setContent(content());
+      }
+      if (onShow) {
+        onShow(ins);
+      }
+    },
+    onCreate: (ins: Instance) => {
       (button as any).popper = ins;
       if (onCreate) {
         onCreate(ins);
       }
       if (padding) {
         (ins.popper as HTMLElement).style.setProperty("--pop-padding", padding);
-      }
-    },
-    onHidden: (ins: any) => {
-      if (onHidden) {
-        onHidden(ins);
       }
     },
     ...(rest as any),
